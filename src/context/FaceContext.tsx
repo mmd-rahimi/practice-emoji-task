@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import emojiParts from "@/data/emojiParts";
 import React, { createContext, ReactNode, useContext, useState } from "react";
 
@@ -8,33 +8,50 @@ export type TFace = {
   mouth: string;
 };
 
+export type TLock = {
+  eyes: boolean;
+  nose: boolean;
+  mouth: boolean;
+};
+
 export type TFaceContext = {
   face: TFace;
+  locked: TLock;
   loadFace: () => void;
+  toggleLock: (part: keyof TFace) => void
 };
 
 const FaceContext = createContext<TFaceContext | undefined>(undefined);
 
-function FaceProvider({ children }: { children: ReactNode }){
+function FaceProvider({ children }: { children: ReactNode }) {
 
   const [face, setFace] = useState<TFace>({ eyes: "", nose: "", mouth: "" });
+  const [locked, setLocked] = useState<TLock>({ eyes: false, nose: false, mouth: false })
 
-//   pick random part of face
+  //   pick random part of face
   const GetRandomPart = (part: string[]) => {
     return part[Math.floor(Math.random() * part.length)];
   };
 
-//   loadFace btn
+  //   loadFace btn
   const loadFace = () => {
-    setFace({
-      eyes: GetRandomPart(emojiParts.eyes),
-      nose: GetRandomPart(emojiParts.nose),
-      mouth: GetRandomPart(emojiParts.mouth),
-    });
+    setFace( (prev) => ({
+      eyes: locked.eyes ? prev.eyes : GetRandomPart(emojiParts.eyes),
+      nose: locked.nose ? prev.nose : GetRandomPart(emojiParts.nose),
+      mouth: locked.mouth ? prev.mouth : GetRandomPart(emojiParts.mouth)
+    }));
   };
 
+//   toggle lock
+  const toggleLock = (part: keyof TFace) => {
+    setLocked((prev) => ({
+        ...prev,
+        [part]: !prev[part]
+    }))
+  }
+
   return (
-    <FaceContext.Provider value={{ loadFace, face }}>
+    <FaceContext.Provider value={{ loadFace, face, locked, toggleLock }}>
       {children}
     </FaceContext.Provider>
   );
@@ -44,7 +61,7 @@ export default FaceProvider;
 
 // use FaceContext easily
 export const useFace = () => {
-    const context = useContext(FaceContext);
-      if (!context) throw new Error("error in passing context");
-    return context;
-}
+  const context = useContext(FaceContext);
+  if (!context) throw new Error("error in passing context");
+  return context;
+};
