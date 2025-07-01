@@ -59,7 +59,7 @@ function FaceProvider({ children }: { children: ReactNode }) {
     }));
   };
 
-//   save states to localStorage
+  //   save states to localStorage
   useEffect(() => {
     const storedFace = localStorage.getItem("face");
     const storedLocked = localStorage.getItem("locked");
@@ -68,14 +68,14 @@ function FaceProvider({ children }: { children: ReactNode }) {
     if (storedLocked) setLocked(JSON.parse(storedLocked));
   }, []);
 
-//   save states to localStorage whenever we have change 
+  //   save states to localStorage whenever we have change
   useEffect(() => {
-    localStorage.setItem("face", JSON.stringify(face))
-  },[face])
+    localStorage.setItem("face", JSON.stringify(face));
+  }, [face]);
 
-    useEffect(() => {
-    localStorage.setItem("locked", JSON.stringify(locked))
-  },[locked])
+  useEffect(() => {
+    localStorage.setItem("locked", JSON.stringify(locked));
+  }, [locked]);
 
   return (
     <FaceContext.Provider value={{ loadFace, face, locked, toggleLock }}>
